@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project dependencies</title>
+
+  <style type="text/css">
+    body {
+      font: 10pt sans;
+    }
+    #mynetwork {
+      width: 1200px;
+      height: 800px;
+      border: 1px solid lightgray;
+    }
+  </style>
+
+  <script src="vis.min.js"></script>
+  <link href="vis-network.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div id="mynetwork"></div>
+
+  <script>
+	fetch('nodes.json').then(function(response) {
+		return response.json();
+	}).then(function(json) {
+		draw(json);
+	});
+  
+    var layoutMethod = "directed";
+
+    function draw(json) {
+      var nodes = [];
+      var edges = [];
+	  
+	  Object.keys(json).forEach(node => nodes.push({id: node, label: node}));
+	  
+	  Object.keys(json).forEach(node => {
+	  		json[node].forEach(link => edges.push({from: node, to: link}));
+		}
+	  );
+
+      // create a network
+      var container = document.getElementById('mynetwork');
+      var data = {
+        nodes: nodes,
+        edges: edges
+      };
+
+      var options = {
+        layout: {
+          hierarchical: {
+            sortMethod: layoutMethod
+          }
+        },
+        edges: {
+          smooth: true,
+          arrows: {to : true }
+        },
+        interaction: {dragNodes :false},
+        physics: {
+            enabled: false
+        },
+        configure: {
+          filter: function (option, path) {
+            return true;
+          },
+          showButton:false
+        }
+      };
+      new vis.Network(container, data, options);
+    }
+	
+  </script>
+  
+</body>
+</html>
